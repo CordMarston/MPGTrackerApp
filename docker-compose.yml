@@ -1,0 +1,38 @@
+version: '3.8'
+services:
+  web:
+    container_name: mpgtracker_app
+    build:
+      context: ./
+      target: runner
+    volumes:
+      - .:/app
+    command: npm run dev
+    ports:
+      - "1739:1739"
+    environment:
+      NODE_ENV: development
+    networks:
+      - npmnetwork
+  db:
+    container_name: mpgtracker_app_postgres
+    image: postgres
+    restart: always
+    shm_size: 128mb
+    environment:
+      POSTGRES_PASSWORD: example
+    networks:
+      - npmnetwork
+
+  adminer:
+    container_name: mpgtracker_app_adminer
+    image: adminer
+    restart: always
+    ports:
+      - 8088:8080
+    networks:
+      - npmnetwork
+networks:
+  npmnetwork:
+    external: true
+    driver: bridge

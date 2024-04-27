@@ -5,7 +5,6 @@ export async function POST(request: Request)
 {
     const res = await request.json();
     let data = res;
-    console.log(data);
     const newLog = await prisma.logs.create({
         data: {
             car_id: parseInt(data.car_id),
@@ -15,21 +14,20 @@ export async function POST(request: Request)
             notes: data.notes
         }
     })
-    return NextResponse.json({"Hello": "Yo"})
-
+    return NextResponse.json({"status": "Success"});
 }
-// export async function GET(request: Request)
-// {
-//     console.log('HIT HERE');
-//     // const body = await request;
-//     // const carId = parseInt(params.carId);
-//     // console.log(carId);
 
-//     // const car = await prisma.cars.findUnique({
-//     //     where: {
-//     //         id: carId
-//     //     }
-//     // });
-//     return NextResponse.json({"id":1,"nickname":"Test","year":2014,"make_id":39,"model_id":655,"user_id":"clj4l47l20000o517xdgkju6j"});
-// }
-
+export async function GET(request: Request)
+{
+    const res = await request.json();
+    let data = res;
+    const car = prisma.cars.findUnique({
+        where: {
+            id: parseInt(data.car_id)
+        },
+        include: {
+            logs: true
+        }
+    });
+    return NextResponse.json({car});
+}

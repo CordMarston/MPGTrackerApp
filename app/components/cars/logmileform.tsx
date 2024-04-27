@@ -1,12 +1,15 @@
-// @refresh reset
 "use client"
-export default async function logMileForm({
+import { redirect, useRouter } from 'next/navigation'
+export default function logMileForm({
     carId,
 }:{
     carId: string
 })
 {
+    const router = useRouter()
+
     const addLog = async (event:any) => {
+        
         event.preventDefault()
         const data = {
             car_id: carId,
@@ -26,11 +29,14 @@ export default async function logMileForm({
             body: JSONdata,
         }
         const response = await fetch(endpoint, options)
-        const result = await response.json()
-        return result;
+        const result = await response.json();
+        if(result.status == 'Success') {
+            router.push('/cars');
+            router.refresh()
+        }
     }
 
-    var date = new Date("Wed, 04 May 2022");
+    var date = new Date();
     var year = date.toLocaleString("default", { year: "numeric" });
     var month = date.toLocaleString("default", { month: "2-digit" });
     var day = date.toLocaleString("default", { day: "2-digit" });

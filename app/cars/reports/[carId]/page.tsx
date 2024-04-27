@@ -1,23 +1,24 @@
-import { prisma } from "@/app/lib/prisma"
-import { Decimal } from "@prisma/client/runtime";
-  
-export default async function carReport({ params }: { params: { carId: string } }) 
-{
+// 'use client';
+import { prisma } from "@/app/lib/prisma";
+
+async function getCar(carId:number) {
     const car = await prisma.cars.findUnique({
         where: {
-            id: parseInt(params.carId)
+            id: carId
         },
         include: {
             logs: true
         }
     });
-    console.log(car);
+    return car;
+};
 
-    let mile_markers: Decimal[] = [];
-    car?.logs.forEach(l => {
-        mile_markers.push(l.miles);
-    })
-    console.log(mile_markers);
+  
+  
+export default async function carReport({ params }: { params: { carId: string } }) 
+{
+    const car = await getCar(parseInt(params.carId));
+
     return (
         <div className="grid-rows-1 grid h-full content-center">
             <div className="self-center">

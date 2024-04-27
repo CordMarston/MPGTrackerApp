@@ -27,7 +27,7 @@ async function Header()
             <div className="flex flex-1 items-center justify-end md:justify-between">
             <nav aria-label="Global">
                 <ul className="flex items-center gap-6 text-sm">
-                    {session ? <li>Your Cars</li> : <li></li>}
+                    {session ? <li><Link className="block" href="/cars">Your Cars</Link></li> : <li></li>}
                 </ul>
             </nav>
 

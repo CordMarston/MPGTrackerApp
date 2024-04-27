@@ -3,8 +3,6 @@ import { useState } from 'react';
 import { prisma } from '@/app/lib/prisma';
 import { Prisma } from "@prisma/client";
 
-import { useSession } from "next-auth/react"
-
 type Models = Prisma.CarModelsGetPayload<{
     select: {
         id: true,
@@ -33,19 +31,15 @@ export default function AddCarForm({
     makes: Makes[]
 })
 {
-    const { data: session } = useSession()
 
-    const [stateMake, setMake] = useState({});
-
-    const [stateModels, setModels] = useState([])
+    const [stateModels, setModels] = useState(Array<Models>)
 
     function makeChanged(e:any)
     {
         const find_make = makes.find(make => make.id == e.target.value);
-        if(find_make)
+        if(find_make && find_make.models)
         {
-            setMake(find_make);
-            // setModels(find_make?.models);
+            setModels(find_make.models.sort((a,b) => a.name.localeCompare(b.name)));
         }
     }
     const addCar = async (event:any) => {

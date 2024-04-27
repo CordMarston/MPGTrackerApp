@@ -2,11 +2,11 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
- 
+
 generator client {
   provider = "prisma-client-js"
 }
- 
+
 model User {
   id            String          @id @default(cuid())
   name          String?
@@ -15,13 +15,13 @@ model User {
   image         String?
   accounts      Account[]
   sessions      Session[]
-  // Optional for WebAuthn support
   Authenticator Authenticator[]
- 
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  Cars      Cars[]
 }
- 
+
 model Account {
   userId            String
   type              String
@@ -34,34 +34,33 @@ model Account {
   scope             String?
   id_token          String?
   session_state     String?
- 
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
- 
+
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
- 
+
   @@id([provider, providerAccountId])
 }
- 
+
 model Session {
   sessionToken String   @unique
   userId       String
   expires      DateTime
   user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
- 
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
- 
+
 model VerificationToken {
   identifier String
   token      String
   expires    DateTime
- 
+
   @@id([identifier, token])
 }
- 
-// Optional for WebAuthn support
+
 model Authenticator {
   id                   String  @id @default(cuid())
   credentialID         String  @unique
@@ -72,6 +71,45 @@ model Authenticator {
   credentialDeviceType String
   credentialBackedUp   Boolean
   transports           String?
- 
+
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model CarMakes {
+  id     Int         @id @default(autoincrement())
+  name   String
+  models CarModels[]
+  cars   Cars[]
+}
+
+model CarModels {
+  id      Int      @id @default(autoincrement())
+  make_id Int
+  make    CarMakes @relation(fields: [make_id], references: [id])
+  name    String
+  series  String?
+  cars    Cars[]
+}
+
+model Cars {
+  id       Int       @id @default(autoincrement())
+  nickname String
+  year     Int
+  make_id  Int
+  make     CarMakes  @relation(fields: [make_id], references: [id])
+  model_id Int
+  model    CarModels @relation(fields: [model_id], references: [id])
+  user_id  String
+  user     User      @relation(fields: [user_id], references: [id])
+  logs     Logs[]
+}
+
+model Logs {
+  id      Int     @id @default(autoincrement())
+  car_id  Int
+  car     Cars    @relation(fields: [car_id], references: [id])
+  miles   Decimal @db.Decimal(9, 2)
+  gallons Decimal @db.Decimal(9, 2)
+  cost    Decimal @db.Decimal(9, 2)
+  notes   String?
 }

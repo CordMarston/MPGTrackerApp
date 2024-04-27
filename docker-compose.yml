@@ -21,6 +21,8 @@ services:
     shm_size: 128mb
     environment:
       POSTGRES_PASSWORD: example
+    volumes:
+      - pgdata:/var/lib/postgresql/data
     networks:
       - npmnetwork
 
@@ -36,3 +38,5 @@ networks:
   npmnetwork:
     external: true
     driver: bridge
+volumes:
+  pgdata:

@@ -1,7 +1,14 @@
 import AddCarForm from "@/app/components/cars/addcarform";
 import { prisma } from '@/app/lib/prisma';
+import { auth } from '@/app/lib/auth';
+import { redirect } from 'next/navigation'
 
 export default async function addCarPage() {
+    const session = await auth()
+    if (!session) {
+        redirect('/auth/login')
+    }
+
     let years = [];
     for(let year = 2000; year <= new Date().getFullYear(); year++)
     {
@@ -9,6 +16,9 @@ export default async function addCarPage() {
     }
 
     const makes = await prisma.carMakes.findMany({
+        orderBy: [
+            {name: 'asc'}
+        ],
         select : {
             id: true,
             name: true,

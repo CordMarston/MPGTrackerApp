@@ -111,5 +111,6 @@ model Logs {
   miles   Decimal @db.Decimal(9, 2)
   gallons Decimal @db.Decimal(9, 2)
   cost    Decimal @db.Decimal(9, 2)
+  logDate DateTime 
   notes   String?
 }

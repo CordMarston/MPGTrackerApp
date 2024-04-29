@@ -1,5 +1,4 @@
 'use client';
-// import { prisma } from "@/app/lib/prisma";
 import Image from 'next/image'
 import Card from '@/app/components/ui/card';
 import { useState, useEffect } from 'react'
@@ -39,11 +38,6 @@ export const options = {
     },
 };
 
-export type logObject = {
-    logDate: '',
-    miles: ''
-}
-
 const LoadingImage = () => {
     return (
         <Image src="/img/loading.webp" width={50} height={50} alt="Loading Webp" className="inline" />
@@ -53,49 +47,45 @@ const LoadingImage = () => {
 export default function CarReport({ params }: { params: { carId: string } }) 
 {
     const [ isLoading, setIsLoading ] = useState(true);
-    const [ car, setCar ] = useState({
-        logs:[]
-    });
-    const [ fuelDate, setFuelDates] = useState<string[]>([]);
-    const [ totalMiles, setTotalMiles] = useState<string[]>([]);
-    let labelDates : string[] = [];
-    let pointMiles : string[] = [];
+    const [ mpgDates, setMpgDates] = useState<string[]>([]);
+    const [ mpgValues, setMpgValues] = useState<number[]>([]);
+
+    let mpgDatesBuilder : string[] = [];
+    let mpgValuesBuilder : number[] = [];
     useEffect(() => {
         fetch(process.env.BASE_URL + '/api/cars/'+params.carId)
         .then((res) => res.json())
         .then((data) => {
-            setCar(data.car);
-            data.car.logs.forEach((log:logObject) => {
-                labelDates.push(new Date(log.logDate).toLocaleDateString());
-                pointMiles.push(log.miles);
-            });
-            if(labelDates.length > 0) {
-                setFuelDates(labelDates);
-                setTotalMiles(pointMiles);
+            for(let i = 0; i < data.car.logs.length; i++) {
+                mpgDatesBuilder.push(new Date(data.car.logs[i].logDate).toLocaleDateString());
+                if(i > 0) {
+                    mpgValuesBuilder.push((data.car.logs[i].miles - data.car.logs[i-1].miles) / data.car.logs[i].gallons);
+                }
             }
+            mpgDatesBuilder.shift();
+            setMpgValues(mpgValuesBuilder);
+            setMpgDates(mpgDatesBuilder);
             setIsLoading(false);
         })
     },[]);
 
-    const labels = fuelDate;
-
-    const data = {
+    const labels = mpgDates;
+    const mpgData = {
         labels,
         datasets: [
             {
-                label: 'Total Miles',
-                data: totalMiles,
+                label: 'MPG',
+                data: mpgValues,
                 borderColor: 'rgb(255, 99, 132)',
                 backgroundColor: 'rgba(255, 99, 132, 0.5)',
             },
         ],
     };
-
     return (
         <div className="grid-rows-1 grid h-full content-center">
             <div className="self-center">
-                <div className="mx-auto max-w-screen-xl px-4 py-16 sm:px-6 lg:px-8">
-                    <Card title="Total Miles" content={isLoading ? <LoadingImage/> : <Line options={options} data={data} />}></Card>
+                <div className="max-w-screen-xl mx-auto gap-8 px-4 sm:px-6 lg:px-8">
+                    <Card title="Miles Per Gallon" content={isLoading ? <LoadingImage/> : mpgValues.length > 0 ? <Line options={options} data={mpgData} /> : 'Not enough data.'}></Card>
                 </div>
             </div>
         </div>

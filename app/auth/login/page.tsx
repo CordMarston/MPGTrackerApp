@@ -37,7 +37,7 @@ export default function LoginPage()
                         </div>
                     </div>
                     <div className="bg-slate-200 mx-auto max-w-lg py-4 pt-6 px-8">
-                        <p className="text-center text-gray-700 text-sm pb-4">Use Your Own</p>
+                        <p className="text-center text-gray-700 text-sm pb-4">Use Your Own (Disabled)</p>
                         <form action="" className="mx-auto max-w-md space-y-4">
                             <div>
                             <label htmlFor="email" className="sr-only">Email</label>
@@ -47,6 +47,7 @@ export default function LoginPage()
                                 type="email"
                                 className="w-full rounded-lg border-gray-200 p-4 pe-12 text-sm shadow-sm"
                                 placeholder="Enter email"
+                                disabled
                                 />
 
                                 <span className="absolute inset-y-0 end-0 grid place-content-center px-4">
@@ -76,6 +77,7 @@ export default function LoginPage()
                                 type="password"
                                 className="w-full rounded-lg border-gray-200 p-4 pe-12 text-sm shadow-sm"
                                 placeholder="Enter password"
+                                disabled
                                 />
 
                                 <span className="absolute inset-y-0 end-0 grid place-content-center px-4">
@@ -103,15 +105,11 @@ export default function LoginPage()
                             </div>
                             </div>
 
-                            <div className="flex items-center justify-between">
-                            <p className="text-sm text-gray-800">
-                                No account? <Link className="underline" href="/auth/register">Register</Link>
-                            </p>
-
+                            <div className="flex items-center justify-end">
                             <button
                                 type="submit"
                                 className="inline-block rounded-lg bg-cyan-600 px-5 py-3 text-sm font-medium text-white"
-                            >
+                                disabled>
                                 Sign in
                             </button>
                             </div>

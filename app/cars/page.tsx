@@ -3,6 +3,8 @@ import { auth } from "@/app/lib/auth";
 import Image from 'next/image'
 import prisma  from "@/app/lib/prisma";
 import { Prisma } from "@prisma/client";
+import { redirect } from 'next/navigation'
+import { Session } from 'next-auth';
 
 type Cars = Prisma.CarsGetPayload<{
     select: {
@@ -16,8 +18,8 @@ type Cars = Prisma.CarsGetPayload<{
     }
 }>
 
-async function getCars() {
-    const session = await auth();
+async function getCars(session: Session) {
+    
     const cars = await prisma.cars.findMany({
         where: {
             user_id: session?.user?.id
@@ -39,7 +41,12 @@ async function getCars() {
 
 export default async function carsPage()
 {
-    const cars = await getCars();
+    const session = await auth();
+    if(!session) {
+        redirect('/auth/login');
+    } 
+    const cars = await getCars(session);
+    
     return (
         
         <div className="grid-rows-1 grid h-full content-center">

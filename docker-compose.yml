@@ -10,6 +10,7 @@ services:
     command: npm run dev
     ports:
       - "1739:1739"
+    restart: always
     environment:
       NODE_ENV: development
     networks:
